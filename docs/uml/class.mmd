@@ -1,0 +1,65 @@
+classDiagram
+direction LR
+class Role {
+  <<enumeration>>
+  STUDENT
+  STAFF
+  ADMIN
+}
+class Status {
+  <<enumeration>>
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+}
+class User {
+  +int id
+  +str username
+  +str full_name
+  +Role role
+  -str password_hash
+}
+class ServiceRequest {
+  +int id
+  +str title
+  +str category
+  +str location
+  +str description
+  +str priority
+  +Status status
+  +int created_by
+  +int assigned_to
+  +str created_at
+  +str updated_at
+  +can_move_to(Status) bool
+}
+class AuthService {
+  +create_user(...) User
+  +authenticate(username, password) User
+}
+class RequestService {
+  +submit(user, form fields) ServiceRequest
+  +visible_requests(user, status) List
+  +get_request(user, id) ServiceRequest
+  +assign(user, id, staff_id) ServiceRequest
+  +update_status(user, id, new_status) ServiceRequest
+}
+class Repository {
+  +init_db()
+  +add_user() User
+  +get_user() User
+  +add_request() int
+  +get_request() ServiceRequest
+  +list_requests() List
+  +assign_request()
+  +set_status()
+}
+User --> Role : has
+ServiceRequest --> Status : in
+User "1" --> "*" ServiceRequest : submits
+User "0..1" --> "*" ServiceRequest : is assigned
+AuthService ..> User : creates
+RequestService ..> ServiceRequest : creates
+AuthService --> Repository : uses
+RequestService --> Repository : uses

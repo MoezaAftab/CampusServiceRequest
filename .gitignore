@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+campus.db
+instance/
+.pytest_cache/
+tests/results.json

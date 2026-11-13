@@ -1,0 +1,23 @@
+sequenceDiagram
+autonumber
+actor S as Student
+participant W as Web routes
+participant R as RequestService
+participant P as Repository
+participant D as SQLite database
+S->>W: POST /requests/new (form data)
+W->>R: submit(user, form fields)
+R->>R: check role, validate fields
+alt input is invalid
+  R-->>W: ValidationError(list of messages)
+  W-->>S: 400: form with error messages
+else input is valid
+  R->>P: add_request(..., created_by)
+  P->>D: INSERT INTO requests (status = Open)
+  D-->>P: new request id
+  P-->>R: id
+  R->>P: get_request(id)
+  P-->>R: ServiceRequest
+  R-->>W: ServiceRequest
+  W-->>S: redirect to list, "Request submitted"
+end

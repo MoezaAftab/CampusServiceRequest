@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Request #{{ req.id }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>#{{ req.id }} {{ req.title }}</h1>
+  <p><span class="pill s-{{ req.status.value|lower|replace(' ', '-') }}">{{ req.status.value }}</span>
+     <span class="pill p-{{ req.priority|lower }}">{{ req.priority }} priority</span></p>
+  <dl>
+    <dt>Category</dt><dd>{{ req.category }}</dd>
+    <dt>Location</dt><dd>{{ req.location }}</dd>
+    <dt>Submitted by</dt><dd>{{ req.creator_name }} on {{ req.created_at }}</dd>
+    <dt>Assigned to</dt><dd>{{ req.assignee_name or 'Not assigned yet' }}</dd>
+    <dt>Last updated</dt><dd>{{ req.updated_at }}</dd>
+    <dt>Description</dt><dd>{{ req.description }}</dd>
+  </dl>
+
+  {% if g.user.role.value == 'admin' and req.status == Status.OPEN %}
+  <form method="post" action="{{ url_for('assign', rid=req.id) }}" class="inline">
+    <label for="staff_id">Assign to</label>
+    <select id="staff_id" name="staff_id">{% for s in staff %}<option value="{{ s.id }}">{{ s.full_name }}</option>{% endfor %}</select>
+    <button type="submit">Assign</button>
+  </form>
+  {% endif %}
+
+  {% if g.user.role.value == 'staff' and req.status.value in ('Assigned', 'In Progress') %}
+  <form method="post" action="{{ url_for('change_status', rid=req.id) }}" class="inline">
+    <input type="hidden" name="status" value="{{ 'In Progress' if req.status.value == 'Assigned' else 'Resolved' }}">
+    <button type="submit">Mark as {{ 'In Progress' if req.status.value == 'Assigned' else 'Resolved' }}</button>
+  </form>
+  {% endif %}
+  <p><a href="{{ url_for('index') }}">Back to list</a></p>
+</div>
+{% endblock %}

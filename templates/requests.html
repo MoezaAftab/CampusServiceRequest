@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="head">
+  <h1>{% if g.user.role.value == 'student' %}My requests{% elif g.user.role.value == 'staff' %}Assigned to me{% else %}All requests{% endif %}</h1>
+  {% if g.user.role.value == 'student' %}<a class="button" href="{{ url_for('new_request') }}">New request</a>{% endif %}
+</div>
+<div class="filters">
+  <a href="{{ url_for('index') }}" class="{{ 'on' if not current }}">All</a>
+  {% for s in statuses %}<a href="{{ url_for('index', status=s) }}" class="{{ 'on' if current == s }}">{{ s }}</a>{% endfor %}
+</div>
+{% if items %}
+<table>
+  <thead><tr><th>#</th><th>Title</th><th>Category</th><th>Location</th><th>Priority</th><th>Status</th><th>Assigned to</th></tr></thead>
+  <tbody>
+  {% for r in items %}
+    <tr>
+      <td>{{ r.id }}</td>
+      <td><a href="{{ url_for('detail', rid=r.id) }}">{{ r.title }}</a></td>
+      <td>{{ r.category }}</td><td>{{ r.location }}</td>
+      <td><span class="pill p-{{ r.priority|lower }}">{{ r.priority }}</span></td>
+      <td><span class="pill s-{{ r.status.value|lower|replace(' ', '-') }}">{{ r.status.value }}</span></td>
+      <td>{{ r.assignee_name or '-' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}<p class="empty">No requests to show.</p>{% endif %}
+{% endblock %}

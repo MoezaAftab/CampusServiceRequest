@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}New request{% endblock %}
+{% block content %}
+<div class="card">
+  <h1>New service request</h1>
+  <form method="post">
+    <label for="title">Title</label>
+    <input id="title" name="title" type="text" maxlength="100" value="{{ form.get('title', '') }}">
+    <div class="row">
+      <div>
+        <label for="category">Category</label>
+        <select id="category" name="category">
+          {% for c in categories %}<option {{ 'selected' if form.get('category') == c }}>{{ c }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="priority">Priority</label>
+        <select id="priority" name="priority">
+          {% for p in priorities %}<option {{ 'selected' if form.get('priority', 'Medium') == p }}>{{ p }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <label for="location">Location</label>
+    <input id="location" name="location" type="text" value="{{ form.get('location', '') }}">
+    <label for="description">Description</label>
+    <textarea id="description" name="description" rows="5">{{ form.get('description', '') }}</textarea>
+    <button type="submit">Submit request</button>
+    <a class="cancel" href="{{ url_for('index') }}">Cancel</a>
+  </form>
+</div>
+{% endblock %}
